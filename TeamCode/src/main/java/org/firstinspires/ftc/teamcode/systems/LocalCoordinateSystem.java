@@ -6,7 +6,7 @@ import com.acmerobotics.dashboard.config.Config;
 class LCSConfig {
     public static double ENCODER_CPR          = 8192;           // Counts per full rotation of an encoder
     public static double ROBOT_DIAMETER       = 15.5;         // Distance between the left and right encoder (diameter) in inches
-    public static double CENTER_WHEEL_OFFSET  = 7.25;    //Distance of the center encoder to the line made between the left and right encoders (radius) in inches
+    public static double CENTER_WHEEL_OFFSET  = 7.5;    //Distance of the center encoder to the line made between the left and right encoders (radius) in inches
 
     public static double WHEEL_DIAMETER_L     = 1.37795;
     public static double WHEEL_DIAMETER_R     = 1.37795;
@@ -26,16 +26,6 @@ public class LocalCoordinateSystem {
     private double INCHES_PER_COUNT_L = LCSConfig.WHEEL_DIAMETER_L * Math.PI / LCSConfig.ENCODER_CPR;
     private double INCHES_PER_COUNT_R = LCSConfig.WHEEL_DIAMETER_R * Math.PI / LCSConfig.ENCODER_CPR;
     private double INCHES_PER_COUNT_C = LCSConfig.WHEEL_DIAMETER_C * Math.PI / LCSConfig.ENCODER_CPR;
-
-    public LocalCoordinateSystem() {
-        this(0, 0, 0);
-    }
-
-    public LocalCoordinateSystem(double x, double y, double a) {
-        this.x = x;
-        this.y = y;
-        this.a = a;
-    }
 
     public void update(double le, double re, double ce) {
 //        INCHES_PER_COUNT_L   = LCSConfig.WHEEL_DIAMETER_L * Math.PI / LCSConfig.ENCODER_CPR;

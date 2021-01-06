@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmodes.debug;
 
+
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
@@ -7,9 +8,9 @@ import org.firstinspires.ftc.teamcode.robots.LiveRobot;
 
 import static org.firstinspires.ftc.teamcode.constants.AutonomousConst.RED;
 
-@Autonomous(name="Odo Test", group="autonomous")
+@Autonomous(name="Odo A", group="autonomous")
 //@Disabled
-public class OdoTest extends LinearOpMode {
+public class OdoA extends LinearOpMode {
 
     LiveRobot robot;
 
@@ -27,14 +28,8 @@ public class OdoTest extends LinearOpMode {
 
         waitForStart();
 
-        robot.drive_train.setInitPos(24, 24, Math.PI);
-
-//        robot.drive_train.odo_move(48, 0, 2*Math.PI, 1, -1, -1);
-
-//        robot.drive_train.odo_move(0, 48, 0, 1, -1, -1);
-
-        robot.drive_train.odo_move(0, 0, Math.PI, 1, -1, Math.PI/60.0);
-
+        robot.drive_train.setInitPos(0, 0, 0);
+        robot.drive_train.odo_move(0, 0, -Math.PI/2, 1, -1, Math.PI/180.0);
 
         robot.shutdown();
     }

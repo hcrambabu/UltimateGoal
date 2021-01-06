@@ -4,6 +4,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -20,13 +21,10 @@ class ShooterConfig {
     public static int INTAKE_MOTOR_COUNTS_PER_REV = 28;
     public static int INTAKE_MOTOR_MAX_COUNT_PER_SEC = (INTAKE_MOTOR_RPM * INTAKE_MOTOR_COUNTS_PER_REV)/60; // MAX Speed
 
-    public static double target_speed = (INTAKE_MOTOR_MAX_COUNT_PER_SEC * 0.615); // counts per second
+    public static double target_speed = (INTAKE_MOTOR_MAX_COUNT_PER_SEC * 0.555); // counts per second
 
     public static double shoot_trigger_pos = 0.0;
     public static double unshoot_trigger_pos = 0.35;
-
-    public static double cagelift_up_pos = 0.5;
-    public static double cagelift_down_po = 1.0f;
 
     public static double VELOCITY_ERROR = 100.0;
 }
@@ -37,7 +35,6 @@ public class Shooter extends Component {
     private DcMotorEx flywheel;     // Flywheel
 
     //// SERVOS ////
-    private Servo cagelift;
     private Servo cage;
     private boolean useHardWait = true;
     private long hardWaitMills = 800;
@@ -59,7 +56,6 @@ public class Shooter extends Component {
 
         //// SERVOS ////
         cage        = hwmap.get(Servo.class, "cage");
-        cagelift    = hwmap.get(Servo.class, "cagelift");
     }
 
     @Override
@@ -72,7 +68,6 @@ public class Shooter extends Component {
         super.updateTelemetry(telemetry);
 
         telemetry.addData("SHOOTER FLWH", robot.bulk_data_2.getMotorVelocity(flywheel));
-        telemetry.addData("SHOOTER CALF", cagelift.getPosition());
         telemetry.addData("SHOOTER TRIG", cage.getPosition());
     }
 
@@ -80,13 +75,12 @@ public class Shooter extends Component {
     public void startup() {
         super.startup();
 
+        flywheel.setDirection(DcMotor.Direction.REVERSE);
         flywheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         flywheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        cage.setDirection(Servo.Direction.REVERSE);
         triggerOff(false);
-        dropCageDown(false);
         update_pid_coeffs();
     }
 
@@ -118,28 +112,6 @@ public class Shooter extends Component {
         flywheel.setVelocity(0);
     }
 
-    public void liftCageUp(boolean wait) {
-        wait = wait && Math.abs(cagelift.getPosition() - ShooterConfig.cagelift_up_pos) > SERVO_POS_ERROR_BOUNDARY;
-        cagelift.setPosition(ShooterConfig.cagelift_up_pos);
-        while(wait && isOpmodeActive() && Math.abs(cagelift.getPosition() - ShooterConfig.cagelift_up_pos) > SERVO_POS_ERROR_BOUNDARY) {
-            cagelift.setPosition(ShooterConfig.cagelift_up_pos);
-        }
-        if(wait && useHardWait) {
-            waitForTime(hardWaitMills/1000.0);
-        }
-    }
-
-    public void dropCageDown(boolean wait) {
-        wait = Math.abs(cagelift.getPosition() - ShooterConfig.cagelift_down_po) > SERVO_POS_ERROR_BOUNDARY;
-        cagelift.setPosition(ShooterConfig.cagelift_down_po);
-        while(wait && isOpmodeActive() && Math.abs(cagelift.getPosition() - ShooterConfig.cagelift_down_po) > SERVO_POS_ERROR_BOUNDARY) {
-            cagelift.setPosition(ShooterConfig.cagelift_down_po);
-        }
-        if(wait && useHardWait) {
-            waitForTime(hardWaitMills/1000.0);
-        }
-    }
-
     public void triggerOn(boolean wait) {
         wait = wait && Math.abs(cage.getPosition() - ShooterConfig.shoot_trigger_pos) > SERVO_POS_ERROR_BOUNDARY;
         cage.setPosition(ShooterConfig.shoot_trigger_pos);
@@ -165,8 +137,6 @@ public class Shooter extends Component {
     public void shoot() {
         spin(true);
         System.out.println("Spin started");
-        liftCageUp(true);
-        System.out.println("Cage up");
         triggerOn(true);
         System.out.println("TRIG on");
         triggerOff(true);
@@ -176,6 +146,5 @@ public class Shooter extends Component {
     public void unshoot() {
         stop();
         triggerOff(true);
-        dropCageDown(true);
     }
 }

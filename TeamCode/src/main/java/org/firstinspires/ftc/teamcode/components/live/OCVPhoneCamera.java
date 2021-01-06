@@ -67,7 +67,7 @@ public class OCVPhoneCamera extends Component {
 
     public void start_streaming() {
         if (!streaming) {
-            phone_camera.startStreaming(320, 240, OpenCvCameraRotation.SIDEWAYS_LEFT);
+            phone_camera.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
             streaming = true;
         }
     }
@@ -93,17 +93,17 @@ public class OCVPhoneCamera extends Component {
             input.convertTo(input, CV_8UC1, 1, 10);
 
             int[] top_rect = {
-                    (int) (input.cols() * (30f / 100f)),
-                    (int) (input.rows() * (40f / 100f)),
                     (int) (input.cols() * (60f / 100f)),
-                    (int) (input.rows() * (50f / 100f))
+                    (int) (input.rows() * (20f / 100f)),
+                    (int) (input.cols() * (80f / 100f)),
+                    (int) (input.rows() * (30f / 100f))
             };
 
             int[] bot_rect = {
-                    (int) (input.cols() * (30f / 100f)),
-                    (int) (input.rows() * (50f / 100f)),
                     (int) (input.cols() * (60f / 100f)),
-                    (int) (input.rows() * (60f / 100f))
+                    (int) (input.rows() * (30f / 100f)),
+                    (int) (input.cols() * (80f / 100f)),
+                    (int) (input.rows() * (40f / 100f))
             };
 
             Mat top_block = input.submat(top_rect[1], top_rect[3], top_rect[0], top_rect[2]);

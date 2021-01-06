@@ -35,9 +35,14 @@ public class DriveTrain extends Component {
     private DcMotorEx drive_lb;   // Left-Back drive motor
     private DcMotorEx drive_rb;   // Right-Back drive motor
 
-    public LocalCoordinateSystem lcs = new LocalCoordinateSystem(-8.0, -61.0, 0.0);
+    public LocalCoordinateSystem lcs = new LocalCoordinateSystem();
 
     public int color = RED;
+
+    // Intial Drive Offsets
+    private double init_x = 0.0;
+    private double init_y = 0.0;
+    private double init_a = 0.0;
 
     // Drive train moves according to these. Update them, it moves
     private double drive_x = 0;
@@ -66,6 +71,12 @@ public class DriveTrain extends Component {
         super(robot);
     }
 
+    public void setInitPos(double x, double y, double a) {
+        this.init_x = x;
+        this.init_y = y;
+        this.init_a = a;
+    }
+
     @Override
     public void registerHardware(HardwareMap hwmap) {
         super.registerHardware(hwmap);
@@ -84,8 +95,8 @@ public class DriveTrain extends Component {
 
         // Updating the localizer with the new odometry encoder counts
         lcs.update(
-                -robot.bulk_data_1.getMotorCurrentPosition(drive_lf),
-                -robot.bulk_data_1.getMotorCurrentPosition(drive_rf),
+                robot.bulk_data_1.getMotorCurrentPosition(drive_lf),
+                robot.bulk_data_1.getMotorCurrentPosition(drive_rf),
                 robot.bulk_data_1.getMotorCurrentPosition(drive_lb)
         );
 
@@ -138,10 +149,10 @@ public class DriveTrain extends Component {
         drive_rb.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // Reverse the left motors, because they have a different orientation on the robot
-        drive_rf.setDirection(DcMotor.Direction.REVERSE);
-        drive_rb.setDirection(DcMotor.Direction.REVERSE);
+        //drive_rf.setDirection(DcMotor.Direction.REVERSE);
+        //drive_rb.setDirection(DcMotor.Direction.REVERSE);
         drive_lb.setDirection(DcMotor.Direction.REVERSE);
-        //drive_lf.setDirection(DcMotor.Direction.REVERSE);
+        drive_lf.setDirection(DcMotor.Direction.REVERSE);
         
         set_mode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         // We run without encoder because we do not have motor encoders, we have odometry instead
@@ -165,7 +176,7 @@ public class DriveTrain extends Component {
 
     // Return the motor powers needed to move in the given travel vector. Should give optimal speeds
     private double[] mecanum_math(double x, double y, double a) {
-        double[] power = new double[]{ - x + y - a, + x + y + a, + x + y - a, - x + y + a};
+        double[] power = new double[]{ + x - y + a, - x - y - a, - x - y + a, + x - y - a};
 
         double max = Math.max(Math.max(Math.abs(power[0]),Math.abs(power[1])),Math.max(Math.abs(power[2]),Math.abs(power[3])));
 
@@ -227,10 +238,33 @@ public class DriveTrain extends Component {
         odo_move(x, y, a, speed, pos_acc, angle_acc, timeout, 0);
     }
 
+    public double transpose_X(double x) {
+        return init_x - x;
+    }
+    public double transpose_Y(double y) {
+        return init_y - y;
+    }
+    public double transpose_A(double a) {
+        return init_a - a;
+    }
+    public double get_X() {
+        return init_x - lcs.x;
+    }
+    public double get_Y() {
+        return init_y - lcs.y;
+    }
+    public double get_A() {
+        return init_a - lcs.a;
+    }
 
     public void odo_move(double x, double y, double a, double speed, double pos_acc, double angle_acc, double timeout, double time_at_target) {
 
-        a = -a;
+        //a = -a;
+
+        // Transpose coordinates
+        x = transpose_X(x);
+        y = transpose_Y(y);
+        a = transpose_A(a);
 
         pos_acc = Math.abs(pos_acc);
         angle_acc = Math.abs(angle_acc);

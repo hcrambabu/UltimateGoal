@@ -14,9 +14,9 @@ class WobbleConfig {
     public static final double HOLD_WOBBLE_POS = 1.0;
     public static final double OPEN_WOBBLE_POS = 0.0;
 
-    public static final double LIFT_DOWN_POS = 0.0f;
-    public static final double LIFT_MIDDLE_POS = 0.35f;
-    public static final double LIFT_UP_POS = 0.75f;
+    public static final double LIFT_DOWN_POS = 0.35f;
+    public static final double LIFT_MIDDLE_POS = 0.45f;
+    public static final double LIFT_UP_POS = 0.9f;
 }
 
 public class Wobble extends Component {
@@ -118,6 +118,8 @@ public class Wobble extends Component {
     @Override
     public void startup() {
         super.startup();
+
+        wobbleservo.setDirection(Servo.Direction.REVERSE);
     }
 
     @Override

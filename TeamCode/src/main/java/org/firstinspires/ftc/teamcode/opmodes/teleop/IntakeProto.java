@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@TeleOp(name="IntakeProtov")
+@TeleOp(name="IntakeProtov1")
 public class IntakeProto extends LinearOpMode{
     private ElapsedTime elapsedtimer = new ElapsedTime();
 
@@ -45,23 +45,27 @@ public class IntakeProto extends LinearOpMode{
         flywheel.setDirection(DcMotor.Direction.FORWARD);
 
         LFDrive.setDirection(DcMotor.Direction.REVERSE);
-        LBDrive.setDirection(DcMotor.Direction.FORWARD);
+        LBDrive.setDirection(DcMotor.Direction.REVERSE);
 
-
-        cage.setDirection(Servo.Direction.REVERSE);
         wobbleservo.setDirection(Servo.Direction.REVERSE);
         lift.setDirection(Servo.Direction.REVERSE);
 
+        RFDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        LFDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        RBDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        LBDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
 
         waitForStart();
+
 
         while(opModeIsActive()){
 
             double flywheelpower = 0;
             if(gamepad1.right_bumper){
-                flywheelpower = (gamepad1.left_trigger-gamepad1.right_trigger)*0.78;
+                flywheelpower = (gamepad1.right_trigger-gamepad1.left_trigger)*0.77;
             } else {
-                flywheelpower = (gamepad1.left_trigger-gamepad1.right_trigger)*0.73;
+                flywheelpower = (gamepad1.right_trigger-gamepad1.left_trigger)*0.72;
             }
 
             double intakePower = gamepad2.left_trigger-gamepad2.right_trigger;
@@ -109,10 +113,11 @@ public class IntakeProto extends LinearOpMode{
             flywheel.setPower(flywheelpower);
             intake.setPower(intakePower);
 
-            RFDrive.setPower(rfPower);
-            RBDrive.setPower(rbPower);
+
             LFDrive.setPower(lfPower);
             LBDrive.setPower(lbPower);
+            RFDrive.setPower(rfPower);
+            RBDrive.setPower(rbPower);
 
             telemetry.addData("Wobble Grab Power: ", gamepad2.left_bumper);
             telemetry.addData("Flywheel Speed: ", flywheelpower);
@@ -120,14 +125,15 @@ public class IntakeProto extends LinearOpMode{
 
             elapsedtimer.reset();
 
-            if(gamepad1.y){
-                while(elapsedtimer.seconds() < 0.06){
-                    setWheeldPower(0.4f, 0.4f, -0.4f, -0.4f);
+            /**          if(gamepad1.y){
+             while(elapsedtimer.seconds() < 0.06){
+             setWheeldPower(0.4f, 0.4f, -0.4f, -0.4f);
 
-                }
-                setWheeldPower(0.0f,0.0f,0.0f,0.0f);
+             }
+             setWheeldPower(0.0f,0.0f,0.0f,0.0f);
 
-            }
+             }
+             */
 
 
         }

@@ -33,11 +33,11 @@ public class LiveTeleop extends LiveTeleopBase {
             robot.shooter.triggerOff(false);
         }
 
-        if(gamepad2.b) {
-            robot.shooter.dropCageDown(false);
-        } else if(gamepad2.a){
-            robot.shooter.liftCageUp(false);
-        }
+//        if(gamepad2.b) {
+//            robot.shooter.dropCageDown(false);
+//        } else if(gamepad2.a){
+//            robot.shooter.liftCageUp(false);
+//        }
 
         if(gamepad2.left_bumper){
             robot.wobble.closeWobbleServo(false);
